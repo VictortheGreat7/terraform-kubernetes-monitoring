@@ -112,10 +112,6 @@ resource "helm_release" "prometheus-operator" {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes[0]"
     value = var.alertmanager_pv_access_modes
   }
-  #  set {
-  #    name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.storageClassName"
-  #    value = kubernetes_persistent_volume.alertmanager_pv.spec.0.storage_class_name
-  #  }
   set {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage"
     value = kubernetes_persistent_volume.alertmanager_pv.spec.0.capacity.storage
@@ -155,10 +151,6 @@ resource "helm_release" "prometheus-operator" {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
     value = var.prometheus_pv_access_modes
   }
-  #  set {
-  #    name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
-  #    value = kubernetes_persistent_volume.prometheus_pv.spec.0.storage_class_name
-  #  }
   set {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
     value = kubernetes_persistent_volume.prometheus_pv.spec.0.capacity.storage
