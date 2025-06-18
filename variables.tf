@@ -61,7 +61,7 @@ variable "prometheus_pv_size" {
 variable "prometheus_pv_storage_class_name" {
   description = "Prometheus Persistant volume storage class name"
   type        = string
-  default     = "monitoring-nfs-prometheus-pv"
+  default     = ""
 }
 variable "prometheus_pv_access_modes" {
   description = "Prometheus Persitant volume access modes"
@@ -82,7 +82,7 @@ variable "alertmanager_pv_size" {
 variable "alertmanager_storage_class_name" {
   description = "Alertmanager Persistant volume storage class name"
   type        = string
-  default     = "monitoring-nfs-alertmanager-pv"
+  default     = ""
 }
 variable "alertmanager_pv_access_modes" {
   description = "Alertmanager Persitant volume access modes"
