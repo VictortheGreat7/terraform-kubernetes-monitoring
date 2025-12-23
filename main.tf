@@ -230,10 +230,7 @@ resource "helm_release" "prometheus-operator" {
     {
       name  = "grafana.persistence.subPath"
       value = "grafana"
-    }
-  ]
-
-  set = [
+    },
     for set in var.additional_set: {
       name  = set.value.name
       value = set.value.value
