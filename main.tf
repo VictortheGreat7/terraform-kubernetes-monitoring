@@ -66,6 +66,11 @@ resource "helm_release" "prometheus-operator" {
 
   # Disable unused metrics
   set = [
+    for set in var.additional_set: {
+      name  = set.value.name
+      value = set.value.value
+      type  = lookup(set.value, "type", null)
+    },
     {
       name  = "kubeEtcd.enabled"
       value = "false"
@@ -224,11 +229,6 @@ resource "helm_release" "prometheus-operator" {
     {
       name  = "grafana.persistence.subPath"
       value = "grafana"
-    },
-    for set in var.additional_set: {
-      name  = set.value.name
-      value = set.value.value
-      type  = lookup(set.value, "type", null)
     }
   ]
 
