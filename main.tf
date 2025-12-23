@@ -65,168 +65,168 @@ resource "helm_release" "prometheus-operator" {
   values = concat(local.grafana_ldap_auth, var.additional_values)
 
   # Disable unused metrics
-  set {
+  set = {
     name  = "kubeEtcd.enabled"
     value = "false"
   }
-  set {
+  set = {
     name  = "kubeControllerManager.enabled"
     value = "false"
   }
-  set {
+  set = {
     name  = "kubeScheduler.enabled"
     value = "false"
   }
 
   # Alert Manager
-  set {
+  set = {
     name  = "alertmanager.ingress.enabled"
     value = "true"
   }
-  set {
+  set = {
     name  = "alertmanager.ingress.pathType"
     value = "ImplementationSpecific"
   }
-  set {
+  set = {
     name  = "alertmanager.ingress.hosts[0]"
     value = "${var.alertmanager_subdomain}${var.domain}"
   }
-  set {
+  set = {
     name  = "alertmanager.ingress.tls[0].hosts[0]"
     value = "${var.alertmanager_subdomain}${var.domain}"
   }
-  set {
+  set = {
     name  = "alertmanager.ingress.tls[0].secretName"
     value = var.alertmanager_tls == null ? var.tls : var.alertmanager_tls
   }
-  set {
+  set = {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/whitelist-source-range"
     value = replace(var.alertmanager_whitelist == null ? var.cidr_whitelist : var.alertmanager_whitelist, ",", "\\,")
     type  = "string"
   }
-  set {
+  set = {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.volumeName"
     value = kubernetes_persistent_volume.alertmanager_pv.id
   }
-  set {
+  set = {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes[0]"
     value = var.alertmanager_pv_access_modes
   }
-  set {
+  set = {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage"
     value = kubernetes_persistent_volume.alertmanager_pv.spec.0.capacity.storage
   }
 
   # Prometheus
-  set {
+  set = {
     name  = "prometheus.ingress.enabled"
     value = "true"
   }
-  set {
+  set = {
     name  = "prometheus.ingress.pathType"
     value = "ImplementationSpecific"
   }
-  set {
+  set = {
     name  = "prometheus.ingress.hosts[0]"
     value = "${var.prometheus_subdomain}${var.domain}"
   }
-  set {
+  set = {
     name  = "prometheus.ingress.tls[0].hosts[0]"
     value = "${var.prometheus_subdomain}${var.domain}"
   }
-  set {
+  set = {
     name  = "prometheus.ingress.tls[0].secretName"
     value = var.prometheus_tls == null ? var.tls : var.prometheus_tls
   }
-  set {
+  set = {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/whitelist-source-range"
     value = replace(var.prometheus_whitelist == null ? var.cidr_whitelist : var.prometheus_whitelist, ",", "\\,")
     type  = "string"
   }
-  set {
+  set = {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName"
     value = kubernetes_persistent_volume.prometheus_pv.id
   }
-  set {
+  set = {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
     value = var.prometheus_pv_access_modes
   }
-  set {
+  set = {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
     value = kubernetes_persistent_volume.prometheus_pv.spec.0.capacity.storage
   }
-  set {
+  set = {
     name  = "prometheus.prometheusSpec.retentionSize"
     value = var.prometheus_retentionSize == null ? "${kubernetes_persistent_volume.prometheus_pv.spec.0.capacity.storage}B" : var.prometheus_retentionSize
   }
-  set {
+  set = {
     name  = "prometheus.prometheusSpec.retention"
     value = var.prometheus_retention
   }
 
   # Grafana
-  set {
+  set = {
     name  = "grafana.ingress.enabled"
     value = "true"
   }
-  set {
+  set = {
     name  = "grafana.ingress.pathType"
     value = "ImplementationSpecific"
   }
-  set {
+  set = {
     name  = "grafana.ingress.hosts[0]"
     value = "${var.grafana_subdomain}${var.domain}"
   }
-  set {
+  set = {
     name  = "grafana.ingress.tls[0].hosts[0]"
     value = "${var.grafana_subdomain}${var.domain}"
   }
-  set {
+  set = {
     name  = "grafana.ingress.tls[0].secretName"
     value = var.grafana_tls == null ? var.tls : var.grafana_tls
   }
-  set {
+  set = {
     name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/whitelist-source-range"
     value = replace(var.grafana_whitelist == null ? var.cidr_whitelist : var.grafana_whitelist, ",", "\\,")
     type  = "string"
   }
-  set {
+  set = {
     name  = "grafana.sidecar.dashboards.enabled"
     value = "true"
   }
-  set {
+  set = {
     name  = "grafana.adminPassword"
     value = var.grafana_admin_password
   }
-  set {
+  set = {
     name  = "grafana.ldap.enabled"
     value = var.grafana_ldap_enable
   }
-  set {
+  set = {
     name  = "grafana.ldap.existingSecret"
     value = kubernetes_secret.grafana_ldap_toml.metadata[0].name
   }
-  set {
+  set = {
     name  = "grafana.persistence.enabled"
     value = "true"
   }
-  set {
+  set = {
     name  = "grafana.persistence.storageClassName"
     value = kubernetes_persistent_volume.grafana_pv.spec.0.storage_class_name
   }
-  set {
+  set = {
     name  = "grafana.persistence.volumeName"
     value = kubernetes_persistent_volume.grafana_pv.id
   }
-  set {
+  set = {
     name  = "grafana.persistence.accessModes[0]"
     value = var.grafana_pv_access_modes
   }
-  set {
+  set = {
     name  = "grafana.persistence.size"
     value = kubernetes_persistent_volume.grafana_pv.spec.0.capacity.storage
   }
-  set {
+  set = {
     name  = "grafana.persistence.subPath"
     value = "grafana"
   }
