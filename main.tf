@@ -233,7 +233,7 @@ resource "helm_release" "prometheus-operator" {
     }
   ]
 
-  set [
+  set = [
     for set in var.additional_set: {
       name  = set.value.name
       value = set.value.value
