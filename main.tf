@@ -78,8 +78,6 @@ resource "helm_release" "prometheus-operator" {
       name  = "kubeScheduler.enabled"
       value = "false"
     },
-
-  # Alert Manager
     {
       name  = "alertmanager.ingress.enabled"
       value = "true"
@@ -117,8 +115,6 @@ resource "helm_release" "prometheus-operator" {
       name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage"
       value = kubernetes_persistent_volume.alertmanager_pv.spec.0.capacity.storage
     },
-
-  # Prometheus
     {
       name  = "prometheus.ingress.enabled"
       value = "true"
@@ -164,8 +160,6 @@ resource "helm_release" "prometheus-operator" {
       name  = "prometheus.prometheusSpec.retention"
       value = var.prometheus_retention
     },
-
-  # Grafana
     {
       name  = "grafana.ingress.enabled"
       value = "true"
