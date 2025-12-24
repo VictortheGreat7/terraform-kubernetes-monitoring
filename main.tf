@@ -1,4 +1,4 @@
-resource "kubernetes_namespace" "namespace" {
+resource "kubernetes_namespace_v1" "namespace" {
   count = var.create_namespace ? 1 : 0
   metadata {
     annotations = {
@@ -8,11 +8,11 @@ resource "kubernetes_namespace" "namespace" {
   }
 }
 
-resource "kubernetes_config_map" "grafana_additional_dashboards" {
+resource "kubernetes_config_map_v1" "grafana_additional_dashboards" {
   metadata {
     name      = "grafana-additional-dashboards"
-    namespace = var.create_namespace ? kubernetes_namespace.namespace[0].id : var.namespace
-    labels    = {
+    namespace = var.create_namespace ? kubernetes_namespace_v1.namespace[0].id : var.namespace
+    labels = {
       "grafana_dashboard" = "1"
     }
   }
@@ -23,13 +23,13 @@ resource "kubernetes_config_map" "grafana_additional_dashboards" {
   }
 }
 
-resource "kubernetes_config_map" "grafana_additional_datasource" {
+resource "kubernetes_config_map_v1" "grafana_additional_datasource" {
   count = var.loki_url != null ? 1 : 0
 
   metadata {
     name      = "grafana-additional-datasource"
-    namespace = var.create_namespace ? kubernetes_namespace.namespace[0].id : var.namespace
-    labels    = {
+    namespace = var.create_namespace ? kubernetes_namespace_v1.namespace[0].id : var.namespace
+    labels = {
       "grafana_datasource" = "1"
     }
   }
@@ -42,10 +42,10 @@ resource "kubernetes_config_map" "grafana_additional_datasource" {
   }
 }
 
-resource "kubernetes_secret" "grafana_ldap_toml" {
+resource "kubernetes_secret_v1" "grafana_ldap_toml" {
   metadata {
     name      = "prometheus-operator-grafana-ldap-toml"
-    namespace = var.create_namespace ? kubernetes_namespace.namespace[0].id : var.namespace
+    namespace = var.create_namespace ? kubernetes_namespace_v1.namespace[0].id : var.namespace
   }
 
   data = {
@@ -57,7 +57,7 @@ resource "helm_release" "prometheus-operator" {
   name            = local.prometheus_chart
   repository      = local.prometheus_repository
   chart           = local.prometheus_chart
-  namespace       = var.create_namespace ? kubernetes_namespace.namespace[0].id : var.namespace
+  namespace       = var.create_namespace ? kubernetes_namespace_v1.namespace[0].id : var.namespace
   cleanup_on_fail = true
   version         = var.prometheus_chart_version
 
@@ -105,7 +105,7 @@ resource "helm_release" "prometheus-operator" {
     },
     {
       name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.volumeName"
-      value = kubernetes_persistent_volume.alertmanager_pv.id
+      value = kubernetes_persistent_volume_v1.alertmanager_pv.id
     },
     {
       name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes[0]"
@@ -113,7 +113,7 @@ resource "helm_release" "prometheus-operator" {
     },
     {
       name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage"
-      value = kubernetes_persistent_volume.alertmanager_pv.spec.0.capacity.storage
+      value = kubernetes_persistent_volume_v1.alertmanager_pv.spec.0.capacity.storage
     },
     {
       name  = "prometheus.ingress.enabled"
@@ -142,7 +142,7 @@ resource "helm_release" "prometheus-operator" {
     },
     {
       name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName"
-      value = kubernetes_persistent_volume.prometheus_pv.id
+      value = kubernetes_persistent_volume_v1.prometheus_pv.id
     },
     {
       name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
@@ -150,11 +150,11 @@ resource "helm_release" "prometheus-operator" {
     },
     {
       name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
-      value = kubernetes_persistent_volume.prometheus_pv.spec.0.capacity.storage
+      value = kubernetes_persistent_volume_v1.prometheus_pv.spec.0.capacity.storage
     },
     {
       name  = "prometheus.prometheusSpec.retentionSize"
-      value = var.prometheus_retentionSize == null ? "${kubernetes_persistent_volume.prometheus_pv.spec.0.capacity.storage}B" : var.prometheus_retentionSize
+      value = var.prometheus_retentionSize == null ? "${kubernetes_persistent_volume_v1.prometheus_pv.spec.0.capacity.storage}B" : var.prometheus_retentionSize
     },
     {
       name  = "prometheus.prometheusSpec.retention"
@@ -199,7 +199,7 @@ resource "helm_release" "prometheus-operator" {
     },
     {
       name  = "grafana.ldap.existingSecret"
-      value = kubernetes_secret.grafana_ldap_toml.metadata[0].name
+      value = kubernetes_secret_v1.grafana_ldap_toml.metadata[0].name
     },
     {
       name  = "grafana.persistence.enabled"
@@ -207,11 +207,11 @@ resource "helm_release" "prometheus-operator" {
     },
     {
       name  = "grafana.persistence.storageClassName"
-      value = kubernetes_persistent_volume.grafana_pv.spec.0.storage_class_name
+      value = kubernetes_persistent_volume_v1.grafana_pv.spec.0.storage_class_name
     },
     {
       name  = "grafana.persistence.volumeName"
-      value = kubernetes_persistent_volume.grafana_pv.id
+      value = kubernetes_persistent_volume_v1.grafana_pv.id
     },
     {
       name  = "grafana.persistence.accessModes[0]"
@@ -219,7 +219,7 @@ resource "helm_release" "prometheus-operator" {
     },
     {
       name  = "grafana.persistence.size"
-      value = kubernetes_persistent_volume.grafana_pv.spec.0.capacity.storage
+      value = kubernetes_persistent_volume_v1.grafana_pv.spec.0.capacity.storage
     },
     {
       name  = "grafana.persistence.subPath"
@@ -228,15 +228,15 @@ resource "helm_release" "prometheus-operator" {
   ]
 
   set_sensitive = [
-    for set in var.additional_set: {
-      name  = set.value.name
-      value = set.value.value
-      type  = lookup(set.value, "type", null)
+    for set in var.additional_set : {
+      name  = set.name
+      value = set.value
+      type  = lookup(set, "type", null)
     }
   ]
 
   depends_on = [
-    kubernetes_persistent_volume.prometheus_pv, kubernetes_persistent_volume.alertmanager_pv,
-    kubernetes_persistent_volume.grafana_pv, kubernetes_config_map.grafana_additional_dashboards
+    kubernetes_persistent_volume_v1.prometheus_pv, kubernetes_persistent_volume_v1.alertmanager_pv,
+    kubernetes_persistent_volume_v1.grafana_pv, kubernetes_config_map_v1.grafana_additional_dashboards
   ]
 }

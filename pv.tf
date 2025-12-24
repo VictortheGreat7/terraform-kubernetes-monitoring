@@ -1,4 +1,4 @@
-resource "kubernetes_persistent_volume" "prometheus_pv" {
+resource "kubernetes_persistent_volume_v1" "prometheus_pv" {
   metadata {
     name = var.prometheus_pv_name
   }
@@ -9,12 +9,13 @@ resource "kubernetes_persistent_volume" "prometheus_pv" {
     }
     storage_class_name               = var.prometheus_pv_storage_class_name
     persistent_volume_reclaim_policy = "Retain"
+
     persistent_volume_source {
       dynamic "nfs" {
-        for_each = var.prometheus_disk_type == "nfs" ? var.prometheus_disk_param : []
+        for_each = var.prometheus_disk_type == "nfs" ? [1] : []
         content {
-          path   = lookup(nfs.value, "path", var.nfs_path)
-          server = lookup(nfs.value, "server", var.nfs_endpoint)
+          path   = var.prometheus_disk_type == "nfs" && length(var.prometheus_disk_param) > 0 ? lookup(var.prometheus_disk_param[0], "path", var.nfs_path) : var.nfs_path
+          server = var.prometheus_disk_type == "nfs" && length(var.prometheus_disk_param) > 0 ? lookup(var.prometheus_disk_param[0], "server", var.nfs_endpoint) : var.nfs_endpoint
         }
       }
 
@@ -37,11 +38,10 @@ resource "kubernetes_persistent_volume" "prometheus_pv" {
           fs_type   = lookup(gce_persistent_disk.value, "fs_type", null)
         }
       }
-
     }
   }
 }
-resource "kubernetes_persistent_volume" "alertmanager_pv" {
+resource "kubernetes_persistent_volume_v1" "alertmanager_pv" {
   metadata {
     name = var.alertmanager_pv_name
   }
@@ -52,6 +52,7 @@ resource "kubernetes_persistent_volume" "alertmanager_pv" {
     }
     storage_class_name               = var.alertmanager_storage_class_name
     persistent_volume_reclaim_policy = "Retain"
+
     persistent_volume_source {
       nfs {
         path   = var.nfs_path
@@ -60,7 +61,7 @@ resource "kubernetes_persistent_volume" "alertmanager_pv" {
     }
   }
 }
-resource "kubernetes_persistent_volume" "grafana_pv" {
+resource "kubernetes_persistent_volume_v1" "grafana_pv" {
   metadata {
     name = var.grafana_pv_name
   }
@@ -71,6 +72,7 @@ resource "kubernetes_persistent_volume" "grafana_pv" {
     }
     storage_class_name               = var.grafana_storage_class_name
     persistent_volume_reclaim_policy = "Retain"
+
     persistent_volume_source {
       nfs {
         path   = var.nfs_path

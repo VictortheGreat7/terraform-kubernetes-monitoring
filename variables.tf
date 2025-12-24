@@ -1,12 +1,17 @@
 variable "prometheus_chart_version" {
   description = "Chart version"
   type        = string
-  default     = "44.3.0"
+  default     = "65.1.1"
 }
 
 variable "additional_set" {
   description = "Add additional set for helm prometheus-operator"
-  default     = []
+  type = list(object({
+    name  = string
+    value = string
+    type  = optional(string)
+  }))
+  default = []
 }
 
 variable "additional_values" {
