@@ -1,7 +1,7 @@
 variable "prometheus_chart_version" {
   description = "Chart version"
   type        = string
-  default     = "44.3.0"
+  default     = "65.1.1"
 }
 
 variable "additional_set" {
