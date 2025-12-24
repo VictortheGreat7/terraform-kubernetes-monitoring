@@ -22,7 +22,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 0.14.9
+          terraform_version: latest
 
       - name: Terraform fmt
         id: fmt
