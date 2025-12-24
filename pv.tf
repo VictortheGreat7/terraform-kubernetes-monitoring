@@ -20,7 +20,7 @@ resource "kubernetes_persistent_volume_v1" "prometheus_pv" {
       }
 
       dynamic "aws_elastic_block_store" {
-        for_each = var.prometheus_disk_type == "aws" ? [1] : []
+        for_each = var.prometheus_disk_type == "aws" && length(var.prometheus_disk_param) > 0 ? [1] : []
         content {
           volume_id = var.prometheus_disk_param[0].volume_id
           read_only = lookup(var.prometheus_disk_param[0], "read_only", false)
@@ -30,7 +30,7 @@ resource "kubernetes_persistent_volume_v1" "prometheus_pv" {
       }
 
       dynamic "gce_persistent_disk" {
-        for_each = var.prometheus_disk_type == "gce" ? [1] : []
+        for_each = var.prometheus_disk_type == "gce" && length(var.prometheus_disk_param) > 0 ? [1] : []
         content {
           pd_name   = var.prometheus_disk_param[0].pd_name
           read_only = lookup(var.prometheus_disk_param[0], "read_only", false)
