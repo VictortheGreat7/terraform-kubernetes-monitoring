@@ -12,8 +12,8 @@ Also, optional (default ***false***), you can enable grafana ldap module to gran
 Name | Description
 --- | --- |
 Terraform | >= 1.0.0
-Helm provider | >= 2.5.0
-Kubernetes provider | >= 2.1.0
+Helm provider | >= 2.11.0
+Kubernetes provider | >= 2.23.0
 
 ## Usage
 
@@ -73,7 +73,7 @@ module "monitoring" {
 
 Name | Description | Type | Default | Example | Required
 --- | --- | --- | --- |--- |--- 
-prometheus_chart_version | Prometheus Chart version | `string` | `15.2.0` | n/a | no
+prometheus_chart_version | Prometheus Chart version | `string` | `65.1.1` | n/a | no
 additional_set | Add additional set for helm prometheus-operator | <pre>list(object({<br>    name  = string<br>    value = string<br>    type  = string // Optional<br>  }))</pre> | `[]` | n/a | no |
 additional_values | Add additional values (FILE) | `list(any)` | `[]` | `[file("../alertmanager_helm_config.yaml, file("../prom_helm_config.yaml]")` | no
 namespace | Name of namespace where you want to deploy monitoring | `string` | `monitoring` | n/a | no
