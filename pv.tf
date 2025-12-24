@@ -20,22 +20,22 @@ resource "kubernetes_persistent_volume_v1" "prometheus_pv" {
       }
 
       dynamic "aws_elastic_block_store" {
-        for_each = var.prometheus_disk_type == "aws" && length(var.prometheus_disk_param) > 0 ? [1] : []
+        for_each = var.prometheus_disk_type == "aws" ? var.prometheus_disk_param : []
         content {
-          volume_id = var.prometheus_disk_param[0].volume_id
-          read_only = lookup(var.prometheus_disk_param[0], "read_only", false)
-          partition = lookup(var.prometheus_disk_param[0], "partition", null)
-          fs_type   = lookup(var.prometheus_disk_param[0], "fs_type", null)
+          volume_id = aws_elastic_block_store.value.volume_id
+          read_only = lookup(aws_elastic_block_store.value, "read_only", false)
+          partition = lookup(aws_elastic_block_store.value, "partition", null)
+          fs_type   = lookup(aws_elastic_block_store.value, "fs_type", null)
         }
       }
 
       dynamic "gce_persistent_disk" {
-        for_each = var.prometheus_disk_type == "gce" && length(var.prometheus_disk_param) > 0 ? [1] : []
+        for_each = var.prometheus_disk_type == "gce" ? var.prometheus_disk_param : []
         content {
-          pd_name   = var.prometheus_disk_param[0].pd_name
-          read_only = lookup(var.prometheus_disk_param[0], "read_only", false)
-          partition = lookup(var.prometheus_disk_param[0], "partition", null)
-          fs_type   = lookup(var.prometheus_disk_param[0], "fs_type", null)
+          pd_name   = gce_persistent_disk.value.pd_name
+          read_only = lookup(gce_persistent_disk.value, "read_only", false)
+          partition = lookup(gce_persistent_disk.value, "partition", null)
+          fs_type   = lookup(gce_persistent_disk.value, "fs_type", null)
         }
       }
     }
